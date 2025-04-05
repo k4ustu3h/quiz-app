@@ -1,10 +1,9 @@
-// components/Layout.js
 import React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
 
 export default function Layout({ children }) {
 	return (
