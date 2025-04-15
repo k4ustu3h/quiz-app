@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import CircularProgress from "@mui/material/CircularProgress";
 import Typography from "@mui/material/Typography";
-import Layout from "../components/layouts/Layout";
-import QuestionControls from "../components/buttons/QuestionControls";
-import QuizRadioGroup from "../components/buttons/radio/QuizRadioGroup";
+import Layout from "@/components/layouts/Layout";
+import QuestionControls from "@/components/buttons/QuestionControls";
+import QuizRadioGroup from "@/components/buttons/radio/QuizRadioGroup";
 
 export default function Home() {
 	const [currentQuestion, setCurrentQuestion] = useState(null);
