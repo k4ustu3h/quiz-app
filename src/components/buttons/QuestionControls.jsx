@@ -12,6 +12,8 @@ export default function QuestionControls({
 	handleNextQuestion,
 	handleSkipQuestion,
 	isLastQuestion,
+	skipCount,
+	maxSkips,
 }) {
 	return (
 		<Box sx={{ mt: 2, display: "flex", gap: 2, alignItems: "center" }}>
@@ -62,8 +64,12 @@ export default function QuestionControls({
 				</Box>
 			)}
 			{!isAnswerSubmitted && (
-				<Button variant="outlined" onClick={handleSkipQuestion}>
-					Skip Question
+				<Button
+					variant="outlined"
+					onClick={handleSkipQuestion}
+					disabled={skipCount >= maxSkips}
+				>
+					Skip Question ({skipCount}/{maxSkips})
 				</Button>
 			)}
 		</Box>
