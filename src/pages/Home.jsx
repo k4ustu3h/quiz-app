@@ -6,6 +6,7 @@ import Typography from "@mui/material/Typography";
 import Layout from "@/components/layouts/Layout";
 import QuestionControls from "@/components/buttons/QuestionControls";
 import QuestionNumberSelector from "@/components/slider/QuestionNumberSelector";
+import QuizResults from "@/components/QuizResults";
 
 const MAX_SKIPS = 5;
 
@@ -22,6 +23,8 @@ export default function Home() {
 	const [skipCount, setSkipCount] = useState(0);
 	const [backupQuestions, setBackupQuestions] = useState([]);
 	const [quizStarted, setQuizStarted] = useState(false);
+	const [score, setScore] = useState(0);
+	const [quizFinished, setQuizFinished] = useState(false);
 
 	const fetchQuestions = useCallback(async (count) => {
 		setLoading(true);
@@ -36,6 +39,8 @@ export default function Home() {
 			setSkippedQuestionIds([]);
 			setSkipCount(0);
 			setQuizStarted(true);
+			setScore(0);
+			setQuizFinished(false);
 		} catch (err) {
 			setError(err.message);
 			setLoading(false);
@@ -62,6 +67,7 @@ export default function Home() {
 		setNumQuestions(value);
 		setQuizStarted(false);
 		setQuestions([]);
+		setQuizFinished(false);
 	};
 
 	const handleStartQuiz = () => {
@@ -76,9 +82,12 @@ export default function Home() {
 
 	const handleSubmitAnswer = () => {
 		setIsAnswerSubmitted(true);
-		setIsCorrectAnswer(
-			selectedAnswer === questions[currentQuestionIndex]?.correctAnswer
-		);
+		const isCorrect =
+			selectedAnswer === questions[currentQuestionIndex]?.correctAnswer;
+		setIsCorrectAnswer(isCorrect);
+		if (isCorrect) {
+			setScore((prevScore) => prevScore + 1);
+		}
 	};
 
 	const handleNextQuestion = () => {
@@ -117,6 +126,25 @@ export default function Home() {
 		}
 	};
 
+	const handleFinishQuiz = () => {
+		setQuizFinished(true);
+	};
+
+	const handleRestartQuiz = () => {
+		setCurrentQuestionIndex(0);
+		setError(null);
+		setIsAnswerSubmitted(false);
+		setIsCorrectAnswer(null);
+		setLoading(false);
+		setNumQuestions(null);
+		setQuestions([]);
+		setQuizFinished(false);
+		setScore(0);
+		setSelectedAnswer("");
+		setSkipCount(0);
+		setSkippedQuestionIds([]);
+	};
+
 	const currentQuestion = questions[currentQuestionIndex];
 	const isLastQuestion = currentQuestionIndex === questions.length - 1;
 
@@ -146,6 +174,12 @@ export default function Home() {
 					onNumQuestionsChange={handleNumQuestionsChange}
 					onStartQuiz={handleStartQuiz}
 				/>
+			) : quizFinished ? (
+				<QuizResults
+					score={score}
+					totalQuestions={questions.length}
+					onRestartQuiz={handleRestartQuiz}
+				/>
 			) : questions.length > 0 ? (
 				<QuestionControls
 					currentQuestionIndex={currentQuestionIndex}
@@ -160,6 +194,7 @@ export default function Home() {
 					skipCount={skipCount}
 					maxSkips={MAX_SKIPS}
 					isLastQuestion={isLastQuestion}
+					onFinishQuiz={handleFinishQuiz}
 				/>
 			) : (
 				<Typography variant="h6">No questions available.</Typography>

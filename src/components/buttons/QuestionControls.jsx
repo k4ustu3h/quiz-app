@@ -18,6 +18,7 @@ export default function QuestionControls({
 	skipCount,
 	maxSkips,
 	isLastQuestion,
+	onFinishQuiz,
 }) {
 	const currentQuestion = questions[currentQuestionIndex];
 	return (
@@ -82,10 +83,7 @@ export default function QuestionControls({
 								Next Question
 							</Button>
 						) : (
-							<Button
-								variant="contained"
-								onClick={() => alert("Quiz Finished!")}
-							>
+							<Button variant="contained" onClick={onFinishQuiz}>
 								Finish Quiz
 							</Button>
 						)}
