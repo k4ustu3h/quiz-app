@@ -3,6 +3,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import CircularProgress from "@mui/material/CircularProgress";
 import Typography from "@mui/material/Typography";
+import CategorySelector from "@/components/select/CategorySelector";
 import Layout from "@/components/layouts/Layout";
 import QuestionControls from "@/components/buttons/QuestionControls";
 import QuestionNumberSelector from "@/components/slider/QuestionNumberSelector";
@@ -25,13 +26,14 @@ export default function Home() {
 	const [quizStarted, setQuizStarted] = useState(false);
 	const [score, setScore] = useState(0);
 	const [quizFinished, setQuizFinished] = useState(false);
+	const [selectedCategory, setSelectedCategory] = useState("All");
 
-	const fetchQuestions = useCallback(async (count) => {
+	const fetchQuestions = useCallback(async (count, category) => {
 		setLoading(true);
 		setError(null);
 		try {
 			const response = await axios.get(
-				`http://localhost:9090/api/questions?count=${count}`
+				`http://localhost:9090/api/questions?count=${count}&category=${category}`
 			);
 			setQuestions(response.data);
 			setLoading(false);
@@ -48,20 +50,27 @@ export default function Home() {
 		}
 	}, []);
 
-	const fetchBackupQuestions = useCallback(async () => {
-		try {
-			const response = await axios.get(
-				`http://localhost:9090/api/questions?count=${MAX_SKIPS * 2}`
-			);
-			setBackupQuestions(response.data);
-		} catch (err) {
-			console.error("Error fetching backup questions:", err);
-		}
-	}, []);
+	const fetchBackupQuestions = useCallback(
+		async (category) => {
+			try {
+				const response = await axios.get(
+					`http://localhost:9090/api/questions?count=${
+						MAX_SKIPS * 2
+					}&category=${category}`
+				);
+				setBackupQuestions(response.data);
+			} catch (err) {
+				console.error("Error fetching backup questions:", err);
+			}
+		},
+		[MAX_SKIPS]
+	);
 
 	useEffect(() => {
-		fetchBackupQuestions();
-	}, [fetchBackupQuestions]);
+		if (quizStarted) {
+			fetchBackupQuestions(selectedCategory);
+		}
+	}, [quizStarted, fetchBackupQuestions, selectedCategory]);
 
 	const handleNumQuestionsChange = (event, value) => {
 		setNumQuestions(value);
@@ -72,8 +81,16 @@ export default function Home() {
 
 	const handleStartQuiz = () => {
 		if (numQuestions) {
-			fetchQuestions(numQuestions);
+			fetchQuestions(numQuestions, selectedCategory);
 		}
+	};
+
+	const handleCategoryChange = (category) => {
+		setSelectedCategory(category);
+		setNumQuestions(null);
+		setQuizStarted(false);
+		setQuestions([]);
+		setQuizFinished(false);
 	};
 
 	const handleAnswerChange = (event) => {
@@ -141,6 +158,7 @@ export default function Home() {
 		setQuizFinished(false);
 		setScore(0);
 		setSelectedAnswer("");
+		setSelectedCategory("All");
 		setSkipCount(0);
 		setSkippedQuestionIds([]);
 	};
@@ -169,11 +187,17 @@ export default function Home() {
 	return (
 		<Layout>
 			{numQuestions === null || !quizStarted ? (
-				<QuestionNumberSelector
-					numQuestions={numQuestions}
-					onNumQuestionsChange={handleNumQuestionsChange}
-					onStartQuiz={handleStartQuiz}
-				/>
+				<>
+					<CategorySelector
+						onCategoryChange={handleCategoryChange}
+						selectedValue={selectedCategory}
+					/>
+					<QuestionNumberSelector
+						numQuestions={numQuestions}
+						onNumQuestionsChange={handleNumQuestionsChange}
+						onStartQuiz={handleStartQuiz}
+					/>
+				</>
 			) : quizFinished ? (
 				<QuizResults
 					score={score}
