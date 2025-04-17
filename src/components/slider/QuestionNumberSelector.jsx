@@ -32,7 +32,7 @@ export default function QuestionNumberSelector({
 				variant="contained"
 				onClick={onStartQuiz}
 				disabled={!numQuestions}
-				style={{ marginTop: 20 }}
+				sx={{ mt: 8 }}
 			>
 				Start Quiz
 			</Button>

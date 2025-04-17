@@ -3,11 +3,10 @@ import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import CircularProgress from "@mui/material/CircularProgress";
 import Typography from "@mui/material/Typography";
-import CategorySelector from "@/components/select/CategorySelector";
 import Layout from "@/components/layouts/Layout";
 import QuestionControls from "@/components/buttons/QuestionControls";
-import QuestionNumberSelector from "@/components/slider/QuestionNumberSelector";
-import QuizResults from "@/components/QuizResults";
+import QuizPreferences from "@/components/sections/QuizPreferences";
+import QuizResults from "@/components/sections/QuizResults";
 
 const MAX_SKIPS = 5;
 
@@ -187,17 +186,13 @@ export default function Home() {
 	return (
 		<Layout>
 			{numQuestions === null || !quizStarted ? (
-				<>
-					<CategorySelector
-						onCategoryChange={handleCategoryChange}
-						selectedValue={selectedCategory}
-					/>
-					<QuestionNumberSelector
-						numQuestions={numQuestions}
-						onNumQuestionsChange={handleNumQuestionsChange}
-						onStartQuiz={handleStartQuiz}
-					/>
-				</>
+				<QuizPreferences
+					numQuestions={numQuestions}
+					onCategoryChange={handleCategoryChange}
+					onNumQuestionsChange={handleNumQuestionsChange}
+					onStartQuiz={handleStartQuiz}
+					selectedValue={selectedCategory}
+				/>
 			) : quizFinished ? (
 				<QuizResults
 					score={score}
